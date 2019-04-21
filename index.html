@@ -430,7 +430,7 @@
                 "name": localUsrName,
                 "type": "move",
                 "pos": [control.position.x,
-                    control.position.y-50, control.position.z],
+                    control.position.y-27, control.position.z],
                 "rotation": [rotation.x, rotation.y, rotation.z]
             };
             ws.send(JSON.stringify(data));
@@ -528,7 +528,7 @@
                     "name": localUsrName,
                     "type": "add",
                     "pos": [controls.getObject().position.x,
-                        controls.getObject().position.y-50, controls.getObject().position.z],
+                        controls.getObject().position.y-27, controls.getObject().position.z],
                     "rotation": [rotation.x, rotation.y, rotation.z]
                 };
 
@@ -564,8 +564,8 @@
                     "name": localUsrName,
                     "type": "delete",
                     "pos": [controls.getObject().position.x,
-                        controls.getObject().position.y, controls.getObject().position.z],
-                    "rotation": [0, 0, 0]
+                        controls.getObject().position.y-27, controls.getObject().position.z],
+                    "rotation": [rotation.x, rotation.y, rotation.z]
                 };
                 ws.send(JSON.stringify(data));//发送JSON字符串
             };
