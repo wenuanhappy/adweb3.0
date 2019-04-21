@@ -23,6 +23,7 @@ wss.on('connection', function(ws) {
             wss.clients.forEach(function(client) {
                 client.send(JSON.stringify({ "name": message['name'], "pos": message['pos'], "type": 'move', "rotation": message['rotation'] }));
             })
+        }else {
         }
     });
     ws.on('close', function() {
@@ -47,7 +48,7 @@ function sendNew(ws, type) {
     //console.log(ws);
     for (var i = 0; i < allUsers.length; i++) {
         if (allUsers[i]['ws'] !== ws) {
-            if (ws.readyState !== 3) {
+            if (ws.readyState === 1) {
                 ws.send(JSON.stringify({ name: allUsers[i]['name'], type: type, pos: allUsers[i]['pos'], rotation: allUsers[i]['rotation'] }));
             }
         }
@@ -57,7 +58,7 @@ function sendNew(ws, type) {
 function sendOther(ws, name, pos, type, rotation) {
     for (var i = 0; i < allUsers.length; i++) {
         if (allUsers[i]['ws'] !== ws) {
-            if (ws.readyState !== 3) {
+            if (allUsers[i]['ws'].readyState === 1) {
                 allUsers[i]['ws'].send(JSON.stringify({ name: name, type: type, pos: pos, rotation: rotation }));
             }
         }
