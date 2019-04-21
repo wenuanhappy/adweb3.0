@@ -1,6 +1,10 @@
 var ws = require('ws').Server;
 var wss = new ws({ port: 2333 });
 var allUsers = [];
+
+process.on('uncaughtException', function(err) {
+    console.log(err);
+});
 wss.on('connection', function(ws) {
     console.log('serve is started');
     ws.on('message', function(message) {
@@ -8,7 +12,7 @@ wss.on('connection', function(ws) {
         if (message['type'] === 'add') {
             sendNew(ws, 'add');
             sendOther(ws, message['name'], message['pos'], 'add', message['rotation']);
-            allUsers.push({ "ws": ws, "name": message['name'], "pos": message['pos'], "type": 'add', "rotation":message['rotation'] });
+            allUsers.push({ "ws": ws, "name": message['name'], "pos": message['pos'], "type": 'add', "rotation": message['rotation'] });
         } else if (message['type'] === 'move') {
             for (var i = 0; i < allUsers.length; i++) {
                 if (allUsers[i]['ws'] === ws) {
@@ -17,7 +21,7 @@ wss.on('connection', function(ws) {
                 }
             }
             wss.clients.forEach(function(client) {
-                client.send(JSON.stringify({ "name": message['name'], "pos": message['pos'], "type": 'move', "rotation":message['rotation'] }));
+                client.send(JSON.stringify({ "name": message['name'], "pos": message['pos'], "type": 'move', "rotation": message['rotation'] }));
             })
         }
     });
@@ -43,15 +47,19 @@ function sendNew(ws, type) {
     //console.log(ws);
     for (var i = 0; i < allUsers.length; i++) {
         if (allUsers[i]['ws'] !== ws) {
-            ws.send(JSON.stringify({ name: allUsers[i]['name'], type: type, pos: allUsers[i]['pos'], rotation: allUsers[i]['rotation'] }));
+            if (ws.readyState !== 3) {
+                ws.send(JSON.stringify({ name: allUsers[i]['name'], type: type, pos: allUsers[i]['pos'], rotation: allUsers[i]['rotation'] }));
+            }
         }
     }
 }
 
-function sendOther(ws, name, pos, type,rotation) {
+function sendOther(ws, name, pos, type, rotation) {
     for (var i = 0; i < allUsers.length; i++) {
         if (allUsers[i]['ws'] !== ws) {
-            allUsers[i]['ws'].send(JSON.stringify({ name: name, type: type, pos: pos, rotation: rotation }));
+            if (ws.readyState !== 3) {
+                allUsers[i]['ws'].send(JSON.stringify({ name: name, type: type, pos: pos, rotation: rotation }));
+            }
         }
     }
 }
